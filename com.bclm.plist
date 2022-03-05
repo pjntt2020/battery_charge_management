@@ -8,19 +8,16 @@
   <!-- 指定要运行的脚本 -->
   <key>ProgramArguments</key>
   <array>
-    <string>/Users/jpeng/Documents/bclm-0.0.4/blcm.sh</string>
+    <string>/opt/bclm-0.0.4/blcm.sh</string>
   </array>
   <!-- 指定要运行的时间 -->
-  <key>StartCalendarInterval</key>
-  <dict>
-        <key>Minute</key>
-        <integer>1</integer>
-  </dict>
+  <key>StartInterval</key>
+  <integer>60</integer>
 <!-- 标准输出文件 -->
 <key>StandardOutPath</key>
-<string>/Users/jpeng/Documents/bclm-0.0.4/run.log</string>
+<string>/opt/bclm-0.0.4/run.log</string>
 <!-- 标准错误输出文件，错误日志 -->
 <key>StandardErrorPath</key>
-<string>/Users/jpeng/Documents/bclm-0.0.4/run.err</string>
+<string>/opt/bclm-0.0.4/run.err</string>
 </dict>
 </plist>
