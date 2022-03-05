@@ -1,5 +1,6 @@
 #!/bin/bash
 
+binfolder=$(cd "$(dirname "$0")";pwd);
 confFile="blcm.conf"
 if [ -f "$confFile" ]; then
     Batterymin=`sed '/^Batterymin=/!d;s/.*=//' $confFile`  #删除掉不相等,再替换掉等号前的内容,剩下就是数字
@@ -18,7 +19,7 @@ BatteryDrainDate=$(date +%H:%M:%S)
 #当前电池电量
 BatteryPercentage=$(pmset -g batt | grep -Eo "\d+%" | cut -d% -f1)
 #当前SMC设置数值
-BatteryCapacity=$(./bclm read | grep -Eo "\d+")
+BatteryCapacity=$($binfolder/bclm read | grep -Eo "\d+")
 
 if [ "$1" = "conf" ];then
 $switchcommand="conf"
@@ -77,13 +78,13 @@ echo "Configuration saved successfully."
 
 if [ $BatteryPercentage -le $Batterymin ]; then
      if [ $BatteryCapacity -eq $Batterymin ]; then
-      ./bclm write $Batterymax
+      $binfolder/bclm write $Batterymax
      fi 
      echo "$BatteryDrainDate Battery percentage is below $Batterymin ,start charging" >> BatteryPercentage.log   
 
 elif [ $BatteryPercentage -ge $Batterymax ]; then
     if [ $BatteryCapacity -eq $Batterymax ]; then
-      ./bclm write $Batterymin
+      $binfolder/bclm write $Batterymin
      fi 
     echo "$BatteryDrainDate Battery percentage is above $Batterymax ,stop charging" >> BatteryPercentage.log
 fi
@@ -92,7 +93,7 @@ fi
 "complete")
 #运行完全充电模式.判断充电阈值如果不是100,则改成100.
 if [ $BatteryCapacity -lt 100 ];then 
-   ./bclm write 100 
+   $binfolder/bclm write 100 
 fi
 echo "$BatteryDrainDate Battery needs to be fully charged" >> BatteryPercentage.log
 ;;
