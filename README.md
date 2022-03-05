@@ -8,3 +8,9 @@
 
 运行环境：
 2019款MBP，Catalina 10.15.6
+
+安装：
+1、在/opt/路径下创建工作目录，将文件复制进去。
+2、在/Library/LaunchAgents目录下运行sudo ln -s /opt/工作目录／com.blcm.plist  com.blcm.plist
+3、在/Library/LaunchAgents目录运行 sudo launchctl load -w com.blcm.plist  && sudo launchctl start com.blcm.plist 
+4、在/opt/工作目录／下能看到run.lod ,run.err说明定时计划已经运行起来了。
