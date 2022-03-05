@@ -1,13 +1,11 @@
 #!/bin/bash
 
 binfolder=$(cd "$(dirname "$0")";pwd);
-confFile="blcm.conf"
+confFile="$binfolder/blcm.conf"
 if [ -f "$confFile" ]; then
     Batterymin=`sed '/^Batterymin=/!d;s/.*=//' $confFile`  #删除掉不相等,再替换掉等号前的内容,剩下就是数字
     Batterymax=`sed '/^Batterymax=/!d;s/.*=//' $confFile`
     switchcommand=`sed '/^switchcommand=/!d;s/.*=//' $confFile`
-#    echo $Batterymin;
-#    echo $Batterymax;
 else
      touch $confFile
      Batterymin=40
@@ -80,22 +78,23 @@ if [ $BatteryPercentage -le $Batterymin ]; then
      if [ $BatteryCapacity -eq $Batterymin ]; then
       $binfolder/bclm write $Batterymax
      fi 
-     echo "$BatteryDrainDate Battery percentage is below $Batterymin ,start charging" >> BatteryPercentage.log   
+     echo "$BatteryDrainDate Battery percentage is below $Batterymin ,start charging" >> $binfolder/BatteryPercentage.log   
 
 elif [ $BatteryPercentage -ge $Batterymax ]; then
     if [ $BatteryCapacity -eq $Batterymax ]; then
       $binfolder/bclm write $Batterymin
      fi 
-    echo "$BatteryDrainDate Battery percentage is above $Batterymax ,stop charging" >> BatteryPercentage.log
+    echo "$BatteryDrainDate Battery percentage is above $Batterymax ,stop charging" >> $binfolder/BatteryPercentage.log
+else
+    echo "$BatteryDrainDate Current power $BatteryPercentage ,No need to charge. " >> $binfolder/BatteryPercentage.log
 fi
-
 ;;
 "complete")
 #运行完全充电模式.判断充电阈值如果不是100,则改成100.
 if [ $BatteryCapacity -lt 100 ];then 
    $binfolder/bclm write 100 
 fi
-echo "$BatteryDrainDate Battery needs to be fully charged" >> BatteryPercentage.log
+echo "$BatteryDrainDate Battery needs to be fully charged" >> $binfolder/BatteryPercentage.log
 ;;
 *)
   echo "use $0 (conf)"
