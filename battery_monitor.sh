@@ -13,14 +13,14 @@ else
      switchcommand="conf"
 fi
 #日期时间
-BatteryDrainDate=$(date +%H:%M:%S)
+BatteryDrainDate=$(date "+%Y-%m-%d %H:%M:%S")
 #当前电池电量
 BatteryPercentage=$(pmset -g batt | grep -Eo "\d+%" | cut -d% -f1)
 #当前SMC设置数值
 BatteryCapacity=$($binfolder/bclm read | grep -Eo "\d+")
 
 if [ "$1" = "conf" ];then
-$switchcommand="conf"
+switchcommand=$1
 fi
 
 case $switchcommand in
@@ -50,15 +50,15 @@ if [ $inputmin -lt $inputmax ]; then
   e3=`cat $confFile|grep switchcommand|wc -l`
 
   if [ $e1 -gt 0 ]; then 
-      sed -i '/^Batterymin=/d' $confFile
+      sed -i '.bak' '/^Batterymin*/d' $confFile
   fi
 
   if [ $e2 -gt 0 ]; then
-     sed -i '/^Batterymax=/d' $confFile
+     sed -i '.bak' '/^Batterymax*/d' $confFile
   fi
 
   if [ $e3 -gt 0 ]; then
-     sed -i '/^switchcommand=/d' $confFile
+     sed -i '.bak' '/^switchcommand*/d' $confFile
   fi
 
 fi
@@ -77,16 +77,18 @@ echo "Configuration saved successfully."
 if [ $BatteryPercentage -le $Batterymin ]; then
      if [ $BatteryCapacity -eq $Batterymin ]; then
       $binfolder/bclm write $Batterymax
+      echo "$BatteryDrainDate Change Battery charge max to $Batterymax" >> /var/log/batteryPercentage.log
      fi 
-     echo "$BatteryDrainDate Battery percentage is below $Batterymin ,start charging" >> $binfolder/BatteryPercentage.log   
+     echo "$BatteryDrainDate Battery percentage is below $Batterymin ,start charging" >> /var/log/batteryPercentage.log   
 
 elif [ $BatteryPercentage -ge $Batterymax ]; then
     if [ $BatteryCapacity -eq $Batterymax ]; then
       $binfolder/bclm write $Batterymin
+      echo "$BatteryDrainDate Change Battery charge min to $Batterymin" >> /var/log/batteryPercentage.log
      fi 
-    echo "$BatteryDrainDate Battery percentage is above $Batterymax ,stop charging" >> $binfolder/BatteryPercentage.log
+    echo "$BatteryDrainDate Battery percentage is above $Batterymax ,stop charging" >> /var/log/batteryPercentage.log
 else
-    echo "$BatteryDrainDate Current power $BatteryPercentage ,No need to charge. " >> $binfolder/BatteryPercentage.log
+    echo "$BatteryDrainDate Current power $BatteryPercentage . " >> /var/log/batteryPercentage.log
 fi
 ;;
 "complete")
@@ -94,7 +96,7 @@ fi
 if [ $BatteryCapacity -lt 100 ];then 
    $binfolder/bclm write 100 
 fi
-echo "$BatteryDrainDate Battery needs to be fully charged" >> $binfolder/BatteryPercentage.log
+echo "$BatteryDrainDate Battery needs to be fully charged" >> /var/log/batteryPercentage.log
 ;;
 *)
   echo "use $0 (conf)"
