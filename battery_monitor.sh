@@ -61,6 +61,18 @@ if [ $inputmin -lt $inputmax ]; then
      sed -i '.bak' '/^switchcommand*/d' $confFile
   fi
 
+  if [ $inputcommand == "formulate" ]; then
+    if [ $BatteryPercentage -ge $Batterymax ]; then
+         $binfolder/bclm write $Batterymin
+         echo "$BatteryDrainDate Change Battery charge to $Batterymin" >> /var/log/batteryPercentage.log
+    fi  
+
+    if [ $BatteryPercentage -le $Batterymin ]; then
+        $binfolder/bclm write $Batterymax
+        echo "$BatteryDrainDate Change Battery charge to $Batterymax" >> /var/log/batteryPercentage.log
+    fi
+  fi 
+
 fi
 echo "Batterymin="$inputmin >> $confFile
 echo "Batterymax="$inputmax >> $confFile
